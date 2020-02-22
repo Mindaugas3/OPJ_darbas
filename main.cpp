@@ -1,32 +1,47 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <vector>
+#include <exception>
+#include <stdexcept>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
 
 #define Z 100
-#define SIZEOF(x) nullLen(x)
+#define SIZEOF(x) (int) x.size()
 
 //kiek max ivesim vardu ar namu darbu vienam asmeniui
 
+//VEIKIA
+
 using namespace std;
+
+struct studentas {
+	//ivedami duomenys
+	string vardas;
+	string pavarde;
+	vector<float> namudarbai;
+	float egzaminas;
+	//isvedami duomenys
+	float vidurkis;
+	float mediana;
+};
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
 //deklaracijos
-float mediana(float *duom, float egzas);
-void bubbleSort(float *arr, int n);
-void swap(float *xp, float *yp);
-void cpy(float *pirmas, float *antras, int targetsize);
-
-int nullLen(float *mas);
+float mediana(vector<float> duom);
+float vidurkis(vector <float> coll); 
 
 int main(int argc, char** argv) {
 	//deklaracija
-	string vardas[Z];
-	string pavarde[Z];
-	float ND[Z][Z]; //iki 100 ND vienam asmeniui. :)
-	float egzas[Z];
-	float vid[Z];
-	float med[Z];
+	vector<string> vardas;
+	vector<string> pavarde;
+	vector<vector<float> > ND; //iki 100 ND vienam asmeniui. :)
+	vector<float> egzas;
+	vector<float> vid;
+	vector<float> med;
 	int counter = 0;
 	string vrd; //laikinas skaitliukas vardui
 	
@@ -36,119 +51,123 @@ int main(int argc, char** argv) {
 	if(vrd[0] == ' '){
 	 break;
 	} else {
-		vardas[counter] = vrd;
+		vardas.push_back(vrd);
 		vrd = "";
 	}
 	//enter turi sustabdyti ivesties cikla
 	//string traktuojamas kaip char[] masyvas
-	
+	string Q;
 	cout << endl << "Iveskite pavarde: " << endl;
-	cin >> pavarde[counter];
+	cin >> Q;
+	
+	pavarde.push_back(Q);
 	//-------------------------------
 	int ndsk = 0; //namu darbu skaicius kiekvienam zmogui.
 	while(true){
 	cout << endl << "Iveskite namu darbu rezultata arba taska jei viskas " << endl;
-	cin >> ND[counter][ndsk];
-		if(!cin.good()){
-			break;
-		}
+	float I;
+	vector<float> fvec;
+	cin >> I;
+	if(!cin.good()){
+		break;
+	}
+	ND.push_back(fvec);
+	ND.at(counter).push_back(I);
+		
 	ndsk++;
 	}
 	cin.clear();
 	fflush(stdin);
-	
+	float I = 0;
 	cout << endl << "Iveskite egzamino rezultata" << endl;
-	cin >> egzas[counter];
+	cin >> I;
+	egzas.push_back(I);
 	counter++;
 	cout << "Iveskite varda - tarpas kaip pirmas simbolis sustabdys ivesti: " << endl;
 	cin.ignore();
+	}
+	
+		ifstream kursiokai ("kursiokai.txt");
+	string data; //vardas
+	string unused;
+	
+	if(!getline(kursiokai, unused)){ //klaidu patikra ir kategoriju praleidimas;
+		cout << "Failas nerastas arba tuscias!" << endl;
+	}
+	//failo ivedimas
+	while(getline(kursiokai, data)){
+		stringstream eilute(data);
+		string vardasf;
+		eilute >> vardasf;
+		vardas.push_back(vardasf);
+		//------------------------------
+		string pavardef;
+		eilute >> pavardef;
+		pavarde.push_back(pavardef);		
+		//------------------------------
+		float ndbalas;
+		vector<float> ndzmogui;
+		while(eilute >> ndbalas){
+			//namu darbai - vektorius.
+			ndzmogui.push_back(ndbalas);			
+		}
+		int J = (int) ndzmogui.size();
+		float egzaminas = ndzmogui.at(J - 1);
+		ndzmogui.pop_back();
+		ND.push_back(ndzmogui);
+		egzas.push_back(egzaminas);
+		//------------------------------
+		counter++;
 	}
 	
 	//apdorojimas
 	for(int I = 0; I < counter; I++){
 		//vidurkis
 		int J = 0;
-		while(ND[I][J] != NULL){
-			vid[I] += ND[I][J];
+		float tempvid = 0;
+		float tempmed = 0;
+		while(J < ND.at(I).size()){
+			tempvid += ND.at(I).at(J) * 0.4;
 			J++;
 		}
-		vid[I] += egzas[I];
-		vid[I] /= J+1;
+		med.push_back(0.0);
+
+		tempvid /= J;
+		
+		tempvid += egzas.at(I) * 0.6;
+		vid.push_back(tempvid);
 		//mediana
-		med[I] = mediana(ND[I], egzas[I]); //ND[I] rodo i savo masyva
+		med.at(I) = mediana(ND.at(I)); //ND[I] rodo i savo vidini vektoriu
 		
 	}
 	//isvedimas
-			cout << "Vardas: \t Pavarde: \t Vidurkis: \t Mediana: "<< endl;
-			cout << "------------------------------------------" << endl;
+			cout << "Vardas: \t Pavarde: \t Galutinis: \t Mediana: "<< endl;
+			cout << "---------------------------------------------------------------------------------" << endl;
+		
+		//visu vektoriu dydziai 10k+1
 	for(int H = 0; H < counter; H++){
 
-		cout << setprecision(2) << fixed << vardas[H] << " \t " << pavarde[H] << " \t  " << vid[H] << " \t " << med[H] << endl;
+		cout << setprecision(2) << fixed << vardas.at(H) << " \t " << pavarde.at(H) << " \t  " << vid.at(H) << " \t " << med.at(H) << endl;
+		//cout << pavarde.at(H) << endl;
 	}
+	kursiokai.close();
 	system("pause");
 	return 0;
 }
 
-float mediana(float *duom, float egzas){ //X balu is N.D ir 1 is egzamino
+float mediana(vector<float> duom){ //X balu is N.D ir 1 is egzamino
 	//suzinomas dydis ir deklaruojami kintamieji 
+	int H = SIZEOF(duom);
 	float med;
-	int H = SIZEOF(duom) + 1;
-	float masFinal[H]; 
-	cpy(duom, masFinal, H - 1);
-	masFinal[H - 1] = egzas;
-
 	//apdorojimas
-	bubbleSort(masFinal, H); //bubblesort'as visa programa crashina
-	//for(int I = 0; I < H; I++) cout << masFinal[I] << endl;
+	sort(duom.begin(), duom.end());
 	//tada graziname vidurini elementa;
-	//data sample
-
 	if(H % 2 == 1){
-		med = masFinal[H / 2];
+		med = duom.at(H/2);
 	} else {
-		med = (masFinal[H/2 -1] + masFinal[H/2] ) / 2;
+		med = (duom.at(H/2 - 1) + duom.at(H/2)) / 2;
 	}
 	//isvedimas ir pabaiga
 	return med;
 }
 
-void swap(float *xp, float *yp)  
-{  
-    float temp = *xp;  
-    *xp = *yp;  
-    *yp = temp;  
-}  
-
-void bubbleSort(float *arr, int n)  
-{  
-	//cout << "Bubble size: " << n << endl;
-    int i, j;  
-    for (i = 0; i < n-1; i++)      
-    // Last i elements are already in place  
-    for (j = 0; j < n-i-1; j++)  
-        if (arr[j] > arr[j+1])  
-            swap(&arr[j], &arr[j+1]);  
-}  
-
-void cpy(float *pirmas, float *antras, int targetsize){
-	//pirmas niekada nebus didesnis uz antra
-	int size_1 = SIZEOF(pirmas);
-	int size_2 = targetsize;
-	if(size_1 > size_2 ){
-		cout << "Kopijavimo funkcija nebus vykdoma" << endl;
-		return;
-	} else {
-		for(int I = 0; I < size_1; I++){
-			antras[I] = pirmas[I];
-		}
-	}
-}
-
-int nullLen(float *mas){ 
-	//kadangi sizeof'as neveiks nes as priskyriau 100 elementu riba masyvams, reikia naujos funkcijos dydziui
-	int K = 0;
-	while(mas[K] != NULL){
-		K++;
-	}
-	return K;
-}
