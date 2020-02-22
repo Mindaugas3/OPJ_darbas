@@ -8,10 +8,9 @@
 #include <sstream>
 #include <algorithm>
 
-#define Z 100
 #define SIZEOF(x) (int) x.size()
-
-//kiek max ivesim vardu ar namu darbu vienam asmeniui
+#define RANGE(x) range(x, 0, 10)
+#define FILEINPUT 1
 
 //VEIKIA
 
@@ -33,6 +32,7 @@ struct studentas {
 //deklaracijos
 float mediana(vector<float> duom);
 float vidurkis(vector <float> coll); 
+bool range(float F, int a, int b);
 
 int main(int argc, char** argv) {
 	//deklaracija
@@ -64,10 +64,15 @@ int main(int argc, char** argv) {
 	//-------------------------------
 	int ndsk = 0; //namu darbu skaicius kiekvienam zmogui.
 	while(true){
-	cout << endl << "Iveskite namu darbu rezultata arba taska jei viskas " << endl;
-	float I;
-	vector<float> fvec;
-	cin >> I;
+		ND:
+			cout << endl << "Iveskite namu darbu rezultata arba taska jei viskas " << endl;
+			float I;
+			vector<float> fvec;
+			cin >> I;
+		if(!RANGE(I)){
+			cout << "Namu darbu rezultatas turi buti tarp 0 ir 10!" << endl;
+			goto ND;	
+		}
 	if(!cin.good()){
 		break;
 	}
@@ -79,14 +84,29 @@ int main(int argc, char** argv) {
 	cin.clear();
 	fflush(stdin);
 	float I = 0;
-	cout << endl << "Iveskite egzamino rezultata" << endl;
-	cin >> I;
-	egzas.push_back(I);
+	
+	//etiketes naudojimas su goto
+	ivestis:
+		cout << endl << "Iveskite egzamino rezultata" << endl;
+		cin >> I;
+		if(!RANGE(I)){
+			cout << "Egzamino rezultatas turi buti tarp 0 ir 10!" << endl;
+			goto ivestis;
+		}
+		if(cin.good()){
+			egzas.push_back(I);
+		} else {
+			cout << "Egzamino rezultatas turi buti skaicius!" << endl;
+			fflush(stdin);
+			cin.clear();
+			goto ivestis;
+		}
 	counter++;
 	cout << "Iveskite varda - tarpas kaip pirmas simbolis sustabdys ivesti: " << endl;
 	cin.ignore();
 	}
 	
+	#ifdef FILEINPUT
 		ifstream kursiokai ("kursiokai.txt");
 	string data; //vardas
 	string unused;
@@ -119,6 +139,7 @@ int main(int argc, char** argv) {
 		//------------------------------
 		counter++;
 	}
+	#endif
 	
 	//apdorojimas
 	for(int I = 0; I < counter; I++){
@@ -146,11 +167,16 @@ int main(int argc, char** argv) {
 		
 		//visu vektoriu dydziai 10k+1
 	for(int H = 0; H < counter; H++){
-
-		cout << setprecision(2) << fixed << vardas.at(H) << " \t " << pavarde.at(H) << " \t  " << vid.at(H) << " \t " << med.at(H) << endl;
-		//cout << pavarde.at(H) << endl;
+		try{
+			cout << setprecision(2) << fixed << vardas.at(H) << " \t " << pavarde.at(H) << " \t  " << vid.at(H) << " \t " << med.at(H) << endl;			
+		} catch (exception& e){
+			e.what();
+			cout << "Programos klaida. Paleiskite is naujo! " << endl;
+		}
 	}
+	#ifdef FILEINPUT
 	kursiokai.close();
+	#endif
 	system("pause");
 	return 0;
 }
@@ -169,5 +195,11 @@ float mediana(vector<float> duom){ //X balu is N.D ir 1 is egzamino
 	}
 	//isvedimas ir pabaiga
 	return med;
+}
+
+bool range(float F, int a, int b){
+	//jeigu a < F < b, true, priesingai false
+	if(a <= F && F <= b) return true;
+	return false;
 }
 
