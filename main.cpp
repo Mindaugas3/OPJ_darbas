@@ -8,31 +8,13 @@
 #include <sstream>
 #include <algorithm>
 
-#define SIZEOF(x) (int) x.size()
-#define RANGE(x) range(x, 0, 10)
-#define FILEINPUT 1
-
-//VEIKIA
+#include "deklaracijos.h"
+//#include "deklaracijos.cpp"
 
 using namespace std;
 
-struct studentas {
-	//ivedami duomenys
-	string vardas;
-	string pavarde;
-	vector<float> namudarbai;
-	float egzaminas;
-	//isvedami duomenys
-	float vidurkis;
-	float mediana;
-};
-
-/* run this program using the console pauser or add your own getch, system("pause") or input loop */
-
 //deklaracijos
-float mediana(vector<float> duom);
-float vidurkis(vector <float> coll); 
-bool range(float F, int a, int b);
+
 
 int main(int argc, char** argv) {
 	//deklaracija
@@ -64,21 +46,30 @@ int main(int argc, char** argv) {
 	//-------------------------------
 	int ndsk = 0; //namu darbu skaicius kiekvienam zmogui.
 	while(true){
+		
 		ND:
-			cout << endl << "Iveskite namu darbu rezultata arba taska jei viskas " << endl;
+			cout << endl << "Iveskite namu darbu rezultata arba bet koki neskaitini simboli jei viskas " << endl;
 			float I;
 			vector<float> fvec;
 			cin >> I;
-		if(!RANGE(I)){
-			cout << "Namu darbu rezultatas turi buti tarp 0 ir 10!" << endl;
-			goto ND;	
-		}
+			if(!RANGE(I)){
+				cout << "Namu darbu rezultatas turi buti tarp 0 ir 10!" << endl;
+				goto ND;	
+			}
 	if(!cin.good()){
+		if(ndsk == 0){
+				cout << "Iveskite bent viena namu darbo bala!" << endl;
+				cin.clear();
+				fflush(stdin);
+				goto ND;
+		}
+
+		cin.clear();
+		fflush(stdin);
 		break;
 	}
 	ND.push_back(fvec);
 	ND.at(counter).push_back(I);
-		
 	ndsk++;
 	}
 	cin.clear();
@@ -101,6 +92,7 @@ int main(int argc, char** argv) {
 			cin.clear();
 			goto ivestis;
 		}
+	
 	counter++;
 	cout << "Iveskite varda - tarpas kaip pirmas simbolis sustabdys ivesti: " << endl;
 	cin.ignore();
@@ -181,25 +173,4 @@ int main(int argc, char** argv) {
 	return 0;
 }
 
-float mediana(vector<float> duom){ //X balu is N.D ir 1 is egzamino
-	//suzinomas dydis ir deklaruojami kintamieji 
-	int H = SIZEOF(duom);
-	float med;
-	//apdorojimas
-	sort(duom.begin(), duom.end());
-	//tada graziname vidurini elementa;
-	if(H % 2 == 1){
-		med = duom.at(H/2);
-	} else {
-		med = (duom.at(H/2 - 1) + duom.at(H/2)) / 2;
-	}
-	//isvedimas ir pabaiga
-	return med;
-}
-
-bool range(float F, int a, int b){
-	//jeigu a < F < b, true, priesingai false
-	if(a <= F && F <= b) return true;
-	return false;
-}
 
