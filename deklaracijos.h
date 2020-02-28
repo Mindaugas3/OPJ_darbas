@@ -3,7 +3,7 @@
 
 #define SIZEOF(x) (int) x.size()
 #define RANGE(x) range(x, 0, 10)
-#define FILEINPUT 1
+//#define FILEINPUT 1
 
 using namespace std;
 

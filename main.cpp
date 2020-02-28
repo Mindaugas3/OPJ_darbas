@@ -14,26 +14,22 @@
 using namespace std;
 
 //deklaracijos
-
+//#undef FILEINPUT
 
 int main(int argc, char** argv) {
 	//deklaracija
-	vector<string> vardas;
-	vector<string> pavarde;
-	vector<vector<float> > ND; //iki 100 ND vienam asmeniui. :)
-	vector<float> egzas;
-	vector<float> vid;
-	vector<float> med;
+	vector<studentas> studentai;
 	int counter = 0;
 	string vrd; //laikinas skaitliukas vardui
-	
+	studentas S;
 	//ivedimas
 	cout << "Iveskite varda - tarpas kaip pirmas simbolis sustabdys ivesti: " << endl;
 	while(getline(cin, vrd)){
 	if(vrd[0] == ' '){
 	 break;
 	} else {
-		vardas.push_back(vrd);
+		S.vardas = vrd;
+		
 		vrd = "";
 	}
 	//enter turi sustabdyti ivesties cikla
@@ -42,7 +38,7 @@ int main(int argc, char** argv) {
 	cout << endl << "Iveskite pavarde: " << endl;
 	cin >> Q;
 	
-	pavarde.push_back(Q);
+	S.pavarde = Q;
 	//-------------------------------
 	int ndsk = 0; //namu darbu skaicius kiekvienam zmogui.
 	while(true){
@@ -68,8 +64,8 @@ int main(int argc, char** argv) {
 		fflush(stdin);
 		break;
 	}
-	ND.push_back(fvec);
-	ND.at(counter).push_back(I);
+	S.namudarbai = fvec;
+	S.namudarbai.push_back(I);
 	ndsk++;
 	}
 	cin.clear();
@@ -85,14 +81,14 @@ int main(int argc, char** argv) {
 			goto ivestis;
 		}
 		if(cin.good()){
-			egzas.push_back(I);
+			S.egzaminas = I;
 		} else {
 			cout << "Egzamino rezultatas turi buti skaicius!" << endl;
 			fflush(stdin);
 			cin.clear();
 			goto ivestis;
 		}
-	
+	studentai.push_back(S);
 	counter++;
 	cout << "Iveskite varda - tarpas kaip pirmas simbolis sustabdys ivesti: " << endl;
 	cin.ignore();
@@ -109,13 +105,14 @@ int main(int argc, char** argv) {
 	//failo ivedimas
 	while(getline(kursiokai, data)){
 		stringstream eilute(data);
+		studentas SV;
 		string vardasf;
 		eilute >> vardasf;
-		vardas.push_back(vardasf);
+		SV.vardas = vardasf;
 		//------------------------------
 		string pavardef;
 		eilute >> pavardef;
-		pavarde.push_back(pavardef);		
+		SV.pavarde = pavardef;		
 		//------------------------------
 		float ndbalas;
 		vector<float> ndzmogui;
@@ -126,9 +123,10 @@ int main(int argc, char** argv) {
 		int J = (int) ndzmogui.size();
 		float egzaminas = ndzmogui.at(J - 1);
 		ndzmogui.pop_back();
-		ND.push_back(ndzmogui);
-		egzas.push_back(egzaminas);
+		SV.namudarbai = ndzmogui;
+		SV.egzaminas = egzaminas;
 		//------------------------------
+		studentai.push_back(SV);
 		counter++;
 	}
 	#endif
@@ -139,18 +137,16 @@ int main(int argc, char** argv) {
 		int J = 0;
 		float tempvid = 0;
 		float tempmed = 0;
-		while(J < ND.at(I).size()){
-			tempvid += ND.at(I).at(J) * 0.4;
+		while(J < studentai.at(I).namudarbai.size()){
+			tempvid += studentai.at(I).namudarbai.at(J) * 0.4;
 			J++;
 		}
-		med.push_back(0.0);
-
 		tempvid /= J;
 		
-		tempvid += egzas.at(I) * 0.6;
-		vid.push_back(tempvid);
+		tempvid += studentai.at(I).egzaminas * 0.6;
+		studentai.at(I).vidurkis = tempvid;
 		//mediana
-		med.at(I) = mediana(ND.at(I)); //ND[I] rodo i savo vidini vektoriu
+		studentai.at(I).mediana = mediana(studentai.at(I).namudarbai); //ND[I] rodo i savo vidini vektoriu
 		
 	}
 	//isvedimas
@@ -160,7 +156,7 @@ int main(int argc, char** argv) {
 		//visu vektoriu dydziai 10k+1
 	for(int H = 0; H < counter; H++){
 		try{
-			cout << setprecision(2) << fixed << vardas.at(H) << " \t " << pavarde.at(H) << " \t  " << vid.at(H) << " \t " << med.at(H) << endl;			
+			cout << setprecision(2) << fixed << studentai.at(H).vardas << " \t " << studentai.at(H).pavarde << " \t  " << studentai.at(H).vidurkis << " \t " << studentai.at(H).mediana << endl;			
 		} catch (exception& e){
 			e.what();
 			cout << "Programos klaida. Paleiskite is naujo! " << endl;
