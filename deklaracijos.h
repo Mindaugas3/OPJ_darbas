@@ -1,10 +1,11 @@
 #include <vector>
 #include <string>
+#include <chrono>
 
 #define SIZEOF(x) (int) x.size()
 #define RANGE(x) range(x, 0, 10)
 //#define FILEINPUT 1
-
+#define RANDGEN
 using namespace std;
 
 float mediana(vector<float> duom);

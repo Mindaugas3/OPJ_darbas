@@ -7,22 +7,47 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-
+#include <chrono>
 #include "deklaracijos.h"
-//#include "deklaracijos.cpp"
+#include "filegen.h"
 
 using namespace std;
 
 //deklaracijos
-//#undef FILEINPUT
+#define FILEINPUT
 
 int main(int argc, char** argv) {
+	srand(time(NULL));
+	bool input;
+	cout << "Ar norite generuoti naujus failus? [T]aip, [N]e " << endl;
+	char AA = cin.get();
+	if(AA == 'T' || AA == 't'){
+		generuoti(1000, to_string(1000));
+		generuoti(10000, to_string(10000));
+		generuoti(100000, to_string(100000));
+		generuoti(1000000, to_string(1000000));
+	} else {
+		fflush(stdin);
+		cout << "Tuo atveju, ar noresite vesti duomenis ranka? [T]aip, [N]e" << endl;
+		char Q;
+		Q = cin.get();
+		if(Q == 'T' || Q == 't'){
+			input = true;
+		} else {
+			input = false;
+		}
+	}
+	fflush(stdin);
+	auto start = chrono::high_resolution_clock::now();
 	//deklaracija
 	vector<studentas> studentai;
+	vector<studentas> cool;
+	vector<studentas> notcool;
 	int counter = 0;
 	string vrd; //laikinas skaitliukas vardui
 	studentas S;
 	//ivedimas
+	if(input){
 	cout << "Iveskite varda - tarpas kaip pirmas simbolis sustabdys ivesti: " << endl;
 	while(getline(cin, vrd)){
 	if(vrd[0] == ' '){
@@ -93,12 +118,21 @@ int main(int argc, char** argv) {
 	cout << "Iveskite varda - tarpas kaip pirmas simbolis sustabdys ivesti: " << endl;
 	cin.ignore();
 	}
+	}
+	//===============================DARBAS SU FAILAIS==================================
+	//==================================SUPREME=========================================
 	
+	int suf[] = {1000, 10000, 100000, 1000000};
+	for(int I = 0; I < 4; I++){
+	string fname = "Studentai";
+	fname += to_string(suf[I]);
+	fname +=  + ".txt";
+	
+	ifstream kursiokai(fname);
 	#ifdef FILEINPUT
-		ifstream kursiokai ("kursiokai.txt");
 	string data; //vardas
 	string unused;
-	
+	auto start = chrono::high_resolution_clock::now();
 	if(!getline(kursiokai, unused)){ //klaidu patikra ir kategoriju praleidimas;
 		cout << "Failas nerastas arba tuscias!" << endl;
 	}
@@ -130,7 +164,11 @@ int main(int argc, char** argv) {
 		counter++;
 	}
 	#endif
-	
+	kursiokai.close();
+	}
+	auto end = chrono::high_resolution_clock::now();
+	chrono::duration<double> diff = end - start;
+	cout << "Failu skaitymas uztruko: " << diff.count() << " s." << endl;
 	//apdorojimas
 	for(int I = 0; I < counter; I++){
 		//vidurkis
@@ -149,11 +187,15 @@ int main(int argc, char** argv) {
 		studentai.at(I).mediana = mediana(studentai.at(I).namudarbai); //ND[I] rodo i savo vidini vektoriu
 		
 	}
+	rusiuoti(&studentai, &cool, &notcool);
+	isvesti(&cool, &notcool);
 	//isvedimas
-			cout << "Vardas: \t Pavarde: \t Galutinis: \t Mediana: "<< endl;
-			cout << "---------------------------------------------------------------------------------" << endl;
+			//cout << "Vardas: \t Pavarde: \t Galutinis: \t Mediana: "<< endl;
+			//cout << "---------------------------------------------------------------------------------" << endl;
 		
 		//visu vektoriu dydziai 10k+1
+	if(input){
+		
 	for(int H = 0; H < counter; H++){
 		try{
 			cout << setprecision(2) << fixed << studentai.at(H).vardas << " \t " << studentai.at(H).pavarde << " \t  " << studentai.at(H).vidurkis << " \t " << studentai.at(H).mediana << endl;			
@@ -162,9 +204,7 @@ int main(int argc, char** argv) {
 			cout << "Programos klaida. Paleiskite is naujo! " << endl;
 		}
 	}
-	#ifdef FILEINPUT
-	kursiokai.close();
-	#endif
+	}
 	system("pause");
 	return 0;
 }
