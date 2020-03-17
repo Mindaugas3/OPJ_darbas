@@ -29,17 +29,3 @@ bool range(float F, int a, int b){
 	return false;
 }
 
-bool exists(int I, vector<vector<float> > vec){
-	return I < vec.size();
-}
-template<typename T>
-T* aterr(int I, vector<T> vec){
-	try {
-		T t = vec.at(I);
-		T *n = &t;
-		return n;
-	} catch (exception& e){
-		return nullptr;
-	}
-	return nullptr;
-}

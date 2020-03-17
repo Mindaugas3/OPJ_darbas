@@ -7,6 +7,7 @@
 #define MAXGEN 20
 
 using namespace std;
+#pragma once
 struct studentas {
 	//ivedami duomenys
 	string vardas;
@@ -61,7 +62,7 @@ void isvesti(vector<studentas>* cool, vector<studentas>* notcool){
 	n.close();
 	auto end = chrono::high_resolution_clock::now();
 	chrono::duration<double> dif = end - start;
-	cout << "Sugrupuotu failu sukurimas uztruko: " << dif.count() << " s." << endl;
+	//cout << "Sugrupuotu failu sukurimas uztruko: " << dif.count() << " s." << endl;
 }
 
 void avardas(string* vrd, string* pvrd){ //atsitiktinai generuojama rodykle i pora eiluciu, vardo ir pavardes
@@ -99,5 +100,5 @@ void generuoti(int size, string suffix){
 	h.close();
 	auto end = chrono::high_resolution_clock::now();
 	chrono::duration<double> diff = end - start;
-	std::cout << size << " elementu generavimas uztruko: " << diff.count() << " s." << endl;
+	//std::cout << size << " elementu generavimas uztruko: " << diff.count() << " s." << endl;
 }
