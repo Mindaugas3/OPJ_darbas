@@ -19,4 +19,4 @@ Vykdant programą pirmą kartą reikia sugeneruoti failus, todėl reikia konsol�
 
 Programos vykdymo rezultatas - visi matuojami atskirai, kiekvienam dydžiui pritaikius deque, list ir vector duomenų tipus. Matavimai gražiai suskirstyti lentelės pavidalu.
 
-[img]https://i.imgur.com/0IfvSPb.png[/img]
+!(https://i.imgur.com/0IfvSPb.png)
