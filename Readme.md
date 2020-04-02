@@ -6,6 +6,7 @@ Versijos funkcionalumas:
  - Išvedami failai, bet jų laikas nematuojamas
  - Naudojami šablonai (template), kurie leidžia funkcijoms paduoti įvairius STL konteinerius su alokatoriais
  - Į funkciją kreipiamasi tokiu būdu: skaityti<vector>(false, 1000)
+ - Rezultatai išvedami su lietuviškomis raidėmis
 
 Sistemos parametrai:
  - Lenovo ThinkPad
