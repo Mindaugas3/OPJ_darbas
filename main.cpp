@@ -35,6 +35,9 @@ struct studentas {
 	float mediana;
 };
 
+bool gavoSkola(const studentas& st);
+
+bool palyginti(const studentas& s1, const studentas& s2);
 
 template<template <typename, typename> class Container>
 void rusiuoti(Container<studentas, allocator<studentas> >& stud, Container<studentas, allocator<studentas> >& vec1, Container<studentas, allocator<studentas> >& vec2);
@@ -197,10 +200,12 @@ void skaityti(bool input, int num) {
 	if(!getline(kursiokai, unused)){ //klaidu patikra ir kategoriju praleidimas;
 		cout << "Failas nerastas arba tuðèias!" << endl;
 	}
+	stringstream buferis;
+	buferis << kursiokai.rdbuf();
+	kursiokai.close();
 	//failo ivedimas
-	while(getline(kursiokai, data)){
+	while(getline(buferis, data)){
 		
-
 		stringstream eilute(data);
 		studentas SV;
 		string vardasf;
@@ -229,7 +234,7 @@ void skaityti(bool input, int num) {
 		
 	}
 	#endif
-	kursiokai.close();
+
 	auto end = chrono::high_resolution_clock::now();
 		chrono::duration<double> diff = end - start;
 		cout << setw(8) << fixed << setprecision(5) << diff.count() << "s. | ";
@@ -277,21 +282,25 @@ void skaityti(bool input, int num) {
 	}
 }
 
+bool gavoSkola(const studentas& st){
+	if(st.vidurkis < 5) return true;
+	else return false;
+}
+
+bool palyginti(const studentas& s1, const studentas& s2){
+	if(s1.vidurkis == s2.vidurkis) return s1.pavarde > s2.pavarde;
+	return (s1.vidurkis > s2.vidurkis);
+}
+
 template<template <typename, typename> class Container>
 void rusiuoti(Container<studentas, allocator<studentas> >& stud, Container<studentas, allocator<studentas> >& vec1, Container<studentas, allocator<studentas> >& vec2){
 	typedef typename Container<studentas, allocator<studentas> >::iterator elementas;
 	auto start = chrono::high_resolution_clock::now();
 	//pats rusiavimas
 	//cout << stud->size() << endl;
-	for(auto &B : stud){
-		
-		if(B.vidurkis < 5.0){
-			vec2.push_back(B); //ne cool
-		} else {
-			vec1.push_back(B);
-		}
-		
-	}
+	elementas el = stable_partition(stud.begin(), stud.end(), gavoSkola);
+	Container<studentas, allocator<studentas> > geri(el, stud.end());
+	vec1 = geri;
 	//matavimas
 	auto end = chrono::high_resolution_clock::now();
 	chrono::duration<double> dif = end - start;
@@ -304,25 +313,31 @@ void isvesti(Container<studentas, allocator<studentas> >& cool, Container<studen
 	auto start = chrono::high_resolution_clock::now();
 	ofstream m("Linksmuciai.txt");
 	ofstream n("Sadbois.txt");
+	//buferis
+	stringstream good;
+	stringstream bad;
 	
 	for(auto &B : cool){
 		
-		m << B.vardas << " " << B.pavarde << " ";
+		good << B.vardas << " " << B.pavarde << " ";
 		for(int J = 0; J < B.namudarbai.size(); J++){
-			m << B.namudarbai.at(J) << " ";
+			good << B.namudarbai.at(J) << " ";
 		}
-		m << B.egzaminas << endl;
+		good << B.egzaminas << endl;
 		//cout << "Linksmuciai " << endl;
 	}
+	m << good;
+	
 	for(auto &W : notcool){
 		
-		n << W.vardas << " " << W.pavarde << " ";
+		bad << W.vardas << " " << W.pavarde << " ";
 		for(int K = 0; K < W.namudarbai.size(); K++){
-			n << W.namudarbai.at(K) << " ";
+			bad << W.namudarbai.at(K) << " ";
 		}
-		n << W.egzaminas << endl;
+		bad << W.egzaminas << endl;
 		//cout << "Sadbois " << endl;
 	}
+	n << bad;
 	m.close();
 	n.close();
 	auto end = chrono::high_resolution_clock::now();
